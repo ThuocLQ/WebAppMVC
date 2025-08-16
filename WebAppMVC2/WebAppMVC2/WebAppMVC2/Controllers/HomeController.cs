@@ -29,10 +29,28 @@ public class HomeController : Controller
         return View();
     }
     [HttpGet]
-    public IActionResult Users()
+    [Route("api/getUsers")]
+    public IActionResult Users([FromHeader]  string apikey, [FromServicesAttribute] IUserRepository  userRepository)
     {
-        _logger.LogInformation("[Users] METHOD: {m}", Request.Method);
-        return Content("Users");
+        _logger.LogInformation("[Users] apikey: {api}, ", Request.Method);
+        ValidateApikey(apikey);
+        return Content($"Users: {string.Join(',', userRepository.Users)}");
+    }
+
+    private void ValidateApikey(string apikey)
+    {
+        if (apikey == null)
+        {
+            throw new ArgumentNullException(nameof(apikey));
+        }
+    }
+
+    [HttpPost]
+    public IActionResult Users([FromHeader]  string apikey, [FromServicesAttribute] IUserRepository userRepository, string user)
+    {
+        _logger.LogInformation("[Users] METHOD: {m}, apikey: {api}", Request.Method,apikey);
+        userRepository.Add(user);
+        return Ok();
     }
     
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
