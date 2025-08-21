@@ -18,7 +18,7 @@ public class ProductController : Controller
     
     [Route("p/{id}")]
     public IActionResult Details(string id)
-    {
+    { 
         return View(new Product
         {
             Id = id,
